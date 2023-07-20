@@ -24,6 +24,9 @@ const shapes = values(SHAPES)
 const shapesLength = length(shapes)
 const getColors = props(shapes)
 
+const equalFullLength = equals(shapesLength)
+const isLengthEqualFullLength = compose(equalFullLength, length)
+
 const getTriangleColor = prop('triangle')
 const getSquareColor = prop('square')
 const getCircleColor = prop('circle')
@@ -34,6 +37,11 @@ const isRed = equals('red')
 const isBlue = equals('blue')
 const isOrange = equals('orange')
 const isGreen = equals('green')
+
+const getRedShapes = compose(filter(isRed), getColors)
+const getGreenShapes = compose(filter(isGreen), getColors)
+const getOrangeShapes = compose(filter(isOrange), getColors)
+const getBlueShapes = compose(filter(isBlue), getColors)
 
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
 export const validateFieldN1 = allPass([
@@ -62,14 +70,6 @@ export const validateFieldN4 = allPass([
   compose(isOrange, getSquareColor),
   compose(isRed, getStarColor),
 ])
-
-const equalFullLength = equals(shapesLength)
-const isLengthEqualFullLength = compose(equalFullLength, length)
-
-const getRedShapes = compose(filter(isRed), getColors)
-const getGreenShapes = compose(filter(isGreen), getColors)
-const getOrangeShapes = compose(filter(isOrange), getColors)
-const getBlueShapes = compose(filter(isBlue), getColors)
 
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
 export const validateFieldN5 = anyPass([
