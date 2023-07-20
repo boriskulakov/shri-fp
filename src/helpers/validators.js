@@ -1,16 +1,5 @@
 /**
  * @file Домашка по FP ч. 1
- *
- * Основная задача — написать самому, или найти в FP библиотеках функции anyPass/allPass
- * Эти функции/их аналоги есть и в ramda и в lodash
- *
- * allPass — принимает массив функций-предикатов, и возвращает функцию-предикат, которая
- * вернет true для заданного списка аргументов, если каждый из предоставленных предикатов
- * удовлетворяет этим аргументам (возвращает true)
- *
- * anyPass — то же самое, только удовлетворять значению может единственная функция-предикат из массива.
- *
- * Если какие либо функции написаны руками (без использования библиотек) это не является ошибкой
  */
 
 import {
@@ -20,32 +9,15 @@ import {
   count,
   equals,
   filter,
-  gte,
-  keys,
   length,
   lte,
   not,
-  or,
   prop,
-  propEq,
   props,
   values,
 } from 'ramda'
 
-export const SHAPES = {
-  TRIANGLE: 'triangle',
-  SQUARE: 'square',
-  CIRCLE: 'circle',
-  STAR: 'star',
-}
-
-export const COLORS = {
-  RED: 'red',
-  BLUE: 'blue',
-  ORANGE: 'orange',
-  GREEN: 'green',
-  WHITE: 'white',
-}
+import {SHAPES, COLORS} from '../constants'
 
 const shapes = values(SHAPES)
 const shapesLength = length(shapes)
@@ -65,16 +37,12 @@ const isGreen = equals('green')
 const isTrue = equals(true)
 
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
-export const validateFieldN1 = (figures) => {
-  console.log(compose(isWhite, getTriangleColor)(figures))
-
-  return allPass([
-    compose(isWhite, getTriangleColor),
-    compose(isWhite, getCircleColor),
-    compose(isRed, getStarColor),
-    compose(isGreen, getSquareColor),
-  ])(figures)
-}
+export const validateFieldN1 = allPass([
+  compose(isWhite, getTriangleColor),
+  compose(isWhite, getCircleColor),
+  compose(isRed, getStarColor),
+  compose(isGreen, getSquareColor),
+])
 
 // 2. Как минимум две фигуры зеленые.
 export const validateFieldN2 = (figures) => {
@@ -97,13 +65,11 @@ export const validateFieldN3 = (figures) => {
 }
 
 // 4. Синий круг, красная звезда, оранжевый квадрат треугольник любого цвета
-export const validateFieldN4 = (figures) => {
-  return allPass([
-    compose(isBlue, getCircleColor),
-    compose(isOrange, getSquareColor),
-    compose(isRed, getStarColor),
-  ])(figures)
-}
+export const validateFieldN4 = allPass([
+  compose(isBlue, getCircleColor),
+  compose(isOrange, getSquareColor),
+  compose(isRed, getStarColor),
+])
 
 const equalFullLength = equals(shapesLength)
 const isLengthEqualFullLength = compose(equalFullLength, length)
@@ -114,57 +80,36 @@ const getOrangeShapes = compose(filter(isOrange), getColors)
 const getWhiteShapes = compose(filter(isWhite), getColors)
 const getBlueShapes = compose(filter(isBlue), getColors)
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
-export const validateFieldN5 = (figures) => {
-  // console.log(
-  //   // anyPass([
-  //   //   compose(equalLength, filter(isRed), getColors),
-  //   //   compose(equalLength, filter(isGreen), getColors),
-  //   //   compose(equalLength, filter(isOrange), getColors),
-  //   //   compose(equalLength, filter(isWhite), getColors),
-  //   compose(or(equalFullLength, equals(3)), length, getOrangeShapes)(figures),
-  //   compose(length, getOrangeShapes)(figures)
-  //   // ])(figures)
-  // )
-
-  return anyPass([
-    compose(equals(3), length, getRedShapes),
-    compose(equals(3), length, getGreenShapes),
-    compose(equals(3), length, getOrangeShapes),
-    compose(equals(3), length, getBlueShapes),
-    compose(isLengthEqualFullLength, getRedShapes),
-    compose(isLengthEqualFullLength, getGreenShapes),
-    compose(isLengthEqualFullLength, getOrangeShapes),
-    compose(isLengthEqualFullLength, getWhiteShapes),
-    compose(isLengthEqualFullLength, getBlueShapes),
-  ])(figures)
-}
+export const validateFieldN5 = anyPass([
+  compose(equals(3), length, getRedShapes),
+  compose(equals(3), length, getGreenShapes),
+  compose(equals(3), length, getOrangeShapes),
+  compose(equals(3), length, getBlueShapes),
+  compose(isLengthEqualFullLength, getRedShapes),
+  compose(isLengthEqualFullLength, getGreenShapes),
+  compose(isLengthEqualFullLength, getOrangeShapes),
+  compose(isLengthEqualFullLength, getWhiteShapes),
+  compose(isLengthEqualFullLength, getBlueShapes),
+])
 
 // 6. Ровно две зеленые фигуры (одна из зелёных – это треугольник), плюс одна красная. Четвёртая оставшаяся любого доступного цвета, но не нарушающая первые два условия
-export const validateFieldN6 = (figures) => {
-  return allPass([
-    compose(equals(2), length, getGreenShapes),
-    compose(equals(1), length, getRedShapes),
-    compose(isGreen, getTriangleColor),
-  ])(figures)
-}
+export const validateFieldN6 = allPass([
+  compose(equals(2), length, getGreenShapes),
+  compose(equals(1), length, getRedShapes),
+  compose(isGreen, getTriangleColor),
+])
 
 // 7. Все фигуры оранжевые.
-export const validateFieldN7 = (figures) => {
-  return compose(isLengthEqualFullLength, getOrangeShapes)(figures)
-}
+export const validateFieldN7 = compose(isLengthEqualFullLength, getOrangeShapes)
 
 // 8. Не красная и не белая звезда, остальные – любого цвета.
-export const validateFieldN8 = (figures) => {
-  return allPass([
-    compose(not, isRed, getStarColor),
-    compose(not, isWhite, getStarColor),
-  ])(figures)
-}
+export const validateFieldN8 = allPass([
+  compose(not, isRed, getStarColor),
+  compose(not, isWhite, getStarColor),
+])
 
 // 9. Все фигуры зеленые.
-export const validateFieldN9 = (figures) => {
-  return compose(isLengthEqualFullLength, getGreenShapes)(figures)
-}
+export const validateFieldN9 = compose(isLengthEqualFullLength, getGreenShapes)
 
 // 10. Треугольник и квадрат одного цвета (не белого), остальные – любого цвета
 export const validateFieldN10 = (figures) => {
