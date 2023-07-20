@@ -69,20 +69,14 @@ const isLengthEqualFullLength = compose(equalFullLength, length)
 const getRedShapes = compose(filter(isRed), getColors)
 const getGreenShapes = compose(filter(isGreen), getColors)
 const getOrangeShapes = compose(filter(isOrange), getColors)
-const getWhiteShapes = compose(filter(isWhite), getColors)
 const getBlueShapes = compose(filter(isBlue), getColors)
 
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
 export const validateFieldN5 = anyPass([
-  compose(equals(3), length, getRedShapes),
-  compose(equals(3), length, getGreenShapes),
-  compose(equals(3), length, getOrangeShapes),
-  compose(equals(3), length, getBlueShapes),
-  compose(isLengthEqualFullLength, getRedShapes),
-  compose(isLengthEqualFullLength, getGreenShapes),
-  compose(isLengthEqualFullLength, getOrangeShapes),
-  compose(isLengthEqualFullLength, getWhiteShapes),
-  compose(isLengthEqualFullLength, getBlueShapes),
+  compose(lte(3), length, getRedShapes),
+  compose(lte(3), length, getGreenShapes),
+  compose(lte(3), length, getOrangeShapes),
+  compose(lte(3), length, getBlueShapes),
 ])
 
 // 6. Ровно две зеленые фигуры (одна из зелёных – это треугольник), плюс одна красная. Четвёртая оставшаяся любого доступного цвета, но не нарушающая первые два условия
