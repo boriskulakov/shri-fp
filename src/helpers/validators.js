@@ -5,19 +5,23 @@
 import {
   allPass,
   anyPass,
+  ap,
   compose,
+  converge,
   count,
   equals,
   filter,
   length,
   lte,
   not,
+  of,
   prop,
   props,
   values,
 } from 'ramda'
 
-import {SHAPES, COLORS} from '../constants'
+import { SHAPES, COLORS } from '../constants'
+import { __ } from 'ramda'
 
 const shapes = values(SHAPES)
 const shapesLength = length(shapes)
@@ -112,10 +116,8 @@ export const validateFieldN8 = allPass([
 export const validateFieldN9 = compose(isLengthEqualFullLength, getGreenShapes)
 
 // 10. Треугольник и квадрат одного цвета (не белого), остальные – любого цвета
-export const validateFieldN10 = (figures) => {
-  return allPass([
-    compose(not, isWhite, getTriangleColor),
-    compose(not, isWhite, getSquareColor),
-    compose(equals(getTriangleColor(figures)), getSquareColor),
-  ])(figures)
-}
+export const validateFieldN10 = allPass([
+  compose(not, isWhite, getTriangleColor),
+  compose(not, isWhite, getSquareColor),
+  converge(equals, [getTriangleColor, getSquareColor]),
+])
