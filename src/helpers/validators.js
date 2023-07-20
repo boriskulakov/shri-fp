@@ -5,7 +5,6 @@
 import {
   allPass,
   anyPass,
-  ap,
   compose,
   converge,
   count,
@@ -14,14 +13,12 @@ import {
   length,
   lte,
   not,
-  of,
   prop,
   props,
   values,
 } from 'ramda'
 
-import { SHAPES, COLORS } from '../constants'
-import { __ } from 'ramda'
+import { SHAPES } from '../constants'
 
 const shapes = values(SHAPES)
 const shapesLength = length(shapes)
@@ -38,8 +35,6 @@ const isBlue = equals('blue')
 const isOrange = equals('orange')
 const isGreen = equals('green')
 
-const isTrue = equals(true)
-
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
 export const validateFieldN1 = allPass([
   compose(isWhite, getTriangleColor),
@@ -49,24 +44,17 @@ export const validateFieldN1 = allPass([
 ])
 
 // 2. Как минимум две фигуры зеленые.
-export const validateFieldN2 = (figures) => {
-  return lte(2)(
-    count(isTrue, [
-      compose(isGreen, getTriangleColor)(figures),
-      compose(isGreen, getCircleColor)(figures),
-      compose(isGreen, getStarColor)(figures),
-      compose(isGreen, getSquareColor)(figures),
-    ])
-  )
-}
+export const validateFieldN2 = compose(
+  lte(2),
+  length,
+  filter(isGreen, getColors)
+)
 
 // 3. Количество красных фигур равно кол-ву синих.
-export const validateFieldN3 = (figures) => {
-  return equals(
-    count(isRed, getColors(figures)),
-    count(isBlue, getColors(figures))
-  )
-}
+export const validateFieldN3 = converge(equals, [
+  count(isRed, getColors),
+  count(isBlue, getColors),
+])
 
 // 4. Синий круг, красная звезда, оранжевый квадрат треугольник любого цвета
 export const validateFieldN4 = allPass([
@@ -83,6 +71,7 @@ const getGreenShapes = compose(filter(isGreen), getColors)
 const getOrangeShapes = compose(filter(isOrange), getColors)
 const getWhiteShapes = compose(filter(isWhite), getColors)
 const getBlueShapes = compose(filter(isBlue), getColors)
+
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
 export const validateFieldN5 = anyPass([
   compose(equals(3), length, getRedShapes),
