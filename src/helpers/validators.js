@@ -10,6 +10,7 @@ import {
   count,
   equals,
   filter,
+  gte,
   length,
   lte,
   not,
@@ -19,6 +20,7 @@ import {
 } from 'ramda'
 
 import { SHAPES } from '../constants'
+import { __ } from 'ramda'
 
 const shapes = values(SHAPES)
 const shapesLength = length(shapes)
@@ -43,6 +45,14 @@ const getGreenShapes = compose(filter(isGreen), getColors)
 const getOrangeShapes = compose(filter(isOrange), getColors)
 const getBlueShapes = compose(filter(isBlue), getColors)
 
+const numberOfRedShapes = compose(length, getRedShapes)
+const numberOfGreenShapes = compose(length, getGreenShapes)
+const numberOfOrangeShapes = compose(length, getOrangeShapes)
+const numberOfBlueShapes = compose(length, getBlueShapes)
+
+const isGreaterOrEqualThan_3 = gte(__, 3)
+const isGreaterOrEqualThan_2 = gte(__, 2)
+
 // 1. Красная звезда, зеленый квадрат, все остальные белые.
 export const validateFieldN1 = allPass([
   compose(isWhite, getTriangleColor),
@@ -53,7 +63,7 @@ export const validateFieldN1 = allPass([
 
 // 2. Как минимум две фигуры зеленые.
 export const validateFieldN2 = compose(
-  lte(2),
+  isGreaterOrEqualThan_2,
   length,
   filter(isGreen, getColors)
 )
@@ -73,16 +83,16 @@ export const validateFieldN4 = allPass([
 
 // 5. Три фигуры одного любого цвета кроме белого (четыре фигуры одного цвета – это тоже true).
 export const validateFieldN5 = anyPass([
-  compose(lte(3), length, getRedShapes),
-  compose(lte(3), length, getGreenShapes),
-  compose(lte(3), length, getOrangeShapes),
-  compose(lte(3), length, getBlueShapes),
+  compose(isGreaterOrEqualThan_3, numberOfRedShapes),
+  compose(isGreaterOrEqualThan_3, numberOfGreenShapes),
+  compose(isGreaterOrEqualThan_3, numberOfOrangeShapes),
+  compose(isGreaterOrEqualThan_3, numberOfBlueShapes),
 ])
 
 // 6. Ровно две зеленые фигуры (одна из зелёных – это треугольник), плюс одна красная. Четвёртая оставшаяся любого доступного цвета, но не нарушающая первые два условия
 export const validateFieldN6 = allPass([
-  compose(equals(2), length, getGreenShapes),
-  compose(equals(1), length, getRedShapes),
+  compose(equals(2), numberOfGreenShapes),
+  compose(equals(1), numberOfRedShapes),
   compose(isGreen, getTriangleColor),
 ])
 
